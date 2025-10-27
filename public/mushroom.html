@@ -1,0 +1,38 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mushroom</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="theme-gothic">
+  <header class="topbar"><h1>Mushroom</h1><div class="sub">600-piece puzzle — auto-save</div></header>
+  <section class="controls">
+    <div class="row">
+      <a class="btn" href="./">Menu</a>
+      <button id="previewBtn" class="btn">Preview</button>
+      <button id="loadBtn"  class="btn">Load</button>
+      <button id="resetBtn" class="btn warn">Reset</button>
+      <button id="saveBtn"  class="btn primary">Save</button>
+    </div>
+    <div class="stats" id="stats">Moves: 0 · Time: 00:00</div>
+  </section>
+
+  <main class="stage"><canvas id="board" width="512" height="512" aria-label="Mushroom board"></canvas></main>
+
+  <!-- slot modal -->
+  <div id="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modalTitle">Slots</h3>
+        <button id="modalClose" class="btn small">Close</button>
+      </div>
+      <div class="slot-grid" id="slotGrid"></div>
+    </div>
+  </div>
+
+  <script>window.PEBBLE={IMG_URL:'./img/pebble.jpg',ROWS:24,COLS:25,API:'/api',DEFAULT_KEY:'mushroom'};</script>
+  <script src="./pebble.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+﻿:root{
+  --bg:#0a0a0f; --bg2:#0f0f17; --ink:#e8e6ff; --muted:#a1a0b8;
+  --accent:#6b7280; --accent-2:#94a3b8; --warn:#b51d2a; --edge:#26263a;
+  --gold-1:#f9e7b2; --gold-2:#d2a84a; --gold-3:#9a6b1a;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0; padding:0; color:var(--ink);
+  font:16px/1.5 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #201a2a66, transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, #1b162466, transparent 60%),
+    repeating-linear-gradient(135deg, #0a0a0f, #0a0a10 10px, #0b0b12 10px, #0b0b12 20px),
+    var(--bg);
+  background-attachment: fixed;
+}
+a{ color:inherit; text-decoration:none; }
+
+.goth-title{
+  font-family:"Cinzel",serif; font-size:40px; letter-spacing:.4px;
+  background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 58%,var(--gold-3));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 2px 10px #0007;
+}
+
+.card{
+  background:linear-gradient(180deg,#12121a,#0e0e15);
+  border:1px solid var(--edge); border-radius:16px; padding:16px;
+  box-shadow:0 8px 34px rgba(0,0,0,.35);
+}
+
+/* ===== Buttons ===== */
+.btn{
+  padding:10px 14px; border-radius:12px; border:1px solid var(--edge);
+  background:#0e0e15; color:var(--ink); cursor:pointer; text-align:center;
+  min-height:44px;
+}
+.btn:active{ transform:translateY(1px); }
+.btn.primary{
+  background:linear-gradient(180deg,var(--gold-2),var(--gold-3));
+  color:#0b0e12; border:none; font-weight:800;
+}
+.btn.gold-outline{ background:#0f0f17; border:1px solid #58441a; color:var(--gold-1); }
+.btn.warn{ background:#2a0e12; border:1px solid #3b1520; color:#ffb4bd; }
+button.small{ padding:6px 8px; border-radius:10px; font-size:12px; }
+
+/* ===== Puzzle pages (glass header/controls) ===== */
+.topbar{
+  position:sticky; top:0; z-index:5; padding:16px 14px 8px; text-align:center;
+  background:linear-gradient(180deg,rgba(8,8,12,.82),rgba(8,8,12,.66) 60%,transparent);
+  backdrop-filter:saturate(120%) blur(3px); border-bottom:1px solid #141426;
+}
+.topbar h1{
+  margin:0; font-family:"Cinzel",serif; font-weight:800; font-size:34px;
+  background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 58%,var(--gold-3));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+.sub{ color:var(--muted); font-size:13px; margin-top:4px; }
+
+.controls{
+  position:sticky; top:68px; z-index:4; padding:10px 12px;
+  background:rgba(12,12,18,.78); backdrop-filter:saturate(120%) blur(3px);
+  border-top:1px solid #121223; border-bottom:1px solid #121223;
+}
+.row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.stats{ text-align:center; color:var(--muted); font-size:13px; padding-top:6px; }
+
+/* Make control buttons gold outlined by default */
+.controls .btn{ border:1px solid #58441a; color:var(--gold-1); background:#0f0f17; }
+.controls .btn.primary{ color:#f9e7b2; }
+.controls .btn.warn{ color:#ffb4bd; border-color:#3b1520; background:#2a0e12; }
+
+.stage{ display:grid; place-items:center; padding:16px; }
+canvas#board{
+  width:min(96vw,640px); height:auto; aspect-ratio:1/1; border-radius:16px;
+  border:1px solid var(--edge); background:#101018;
+  box-shadow:0 10px 34px rgba(0,0,0,.45); touch-action:manipulation;
+}
+
+/* ===== Toast ===== */
+#toast{
+  position:fixed; right:12px; bottom:12px; background:#0d0e15;
+  border:1px solid var(--edge); padding:10px 12px; border-radius:12px;
+  opacity:0; transform:translateY(8px); transition:.2s; z-index:40;
+}
+#toast.show{ opacity:1; transform:translateY(0); }
+
+/* ===== Modal (high contrast) ===== */
+#modal{
+  position:fixed; inset:0; background:rgba(0,0,0,.6); display:none;
+  align-items:center; justify-content:center; padding:16px; z-index:50;
+}
+#modal.show{ display:flex; }
+.modal-card{
+  width:min(720px,96vw); background:rgba(12,12,18,.92);
+  backdrop-filter:saturate(120%) blur(4px);
+  border:1px solid var(--edge); border-radius:14px;
+  box-shadow:0 10px 40px rgba(0,0,0,.7); padding:14px;
+}
+.modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.modal-head h3{ margin:0; font-size:18px; font-weight:700; }
+.slot-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+@media (max-width:620px){ .slot-grid{ grid-template-columns:1fr; } }
+.slot{
+  padding:12px; border:1px dashed #2a2b3a; border-radius:12px; min-height:120px;
+  display:flex; flex-direction:column; gap:8px; background-size:cover; background-position:center;
+}
+.slot .name{ font-weight:700; text-shadow:0 1px 2px #0008; }
+.slot .meta{ color:var(--muted); font-size:12px; text-shadow:0 1px 2px #0008; }
+.slot .actions{ display:flex; gap:6px; margin-top:auto; }
+
+/* ===== Interaction states (final) ===== */
+
+/* Gold hover/focus/active for enabled buttons */
+.controls .btn:not(:disabled):hover,
+.controls .btn:not(:disabled):focus-visible,
+.controls .btn:not(:disabled):active{
+  background: linear-gradient(180deg, var(--gold-2), var(--gold-3));
+  color: #0b0e12 !important;
+  border: none;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(210,168,74,0.5);
+}
+
+/* Keep Reset distinct when enabled */
+.controls .btn.warn:not(:disabled):hover,
+.controls .btn.warn:not(:disabled):focus-visible{
+  background:#b51d2a; 
+  color:#fff;
+  border-color:#b51d2a;
+}
+
+/* ===== Disabled — ALWAYS gold text (no gray!) ===== */
+.controls button.btn:disabled,
+.controls a.btn[aria-disabled="true"],
+.controls .btn[disabled]{
+  opacity: 1 !important;
+  cursor: not-allowed;
+  background: rgba(15,15,23,.92) !important;
+  border: 1px solid #6b5723 !important;      /* gold outline */
+  color: var(--gold-1) !important;           /* GOLD TEXT */
+  -webkit-text-fill-color: var(--gold-1) !important; /* Safari */
+  box-shadow: none !important;
+}
+
+/* Disabled PRIMARY (if you ever disable a gold-filled one) */
+.controls button.btn.primary:disabled,
+.controls .btn.primary[disabled]{
+  background: linear-gradient(180deg, #b8953a, #7b5a16) !important;
+  color: #f9e7b2 !important;
+  border: none !important;
+  opacity: 1 !important;
+}
+
+/* Visible focus ring for keyboard users (enabled only) */
+.controls .btn:not(:disabled):focus-visible{
+  outline: 2px solid var(--gold-2);
+  outline-offset: 2px;
+}
+/* Save (primary in controls) — make label GOLD when disabled */
+.controls .btn.primary:disabled,
+.controls .btn.primary[aria-disabled="true"]{
+  color: #f9e7b2 !important;           /* same gold as the others */
+  -webkit-text-fill-color: #f9e7b2 !important; /* Safari */
+  opacity: 1 !important;               /* no gray fade */
+}

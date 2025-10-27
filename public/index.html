@@ -1,0 +1,129 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Puzzles for Pebble</title>
+  <link rel="stylesheet" href="./style.css" />
+  <style>
+    :root{ --gold-1:#f9e7b2; --gold-2:#d2a84a; --gold-3:#9a6b1a; }
+    .wrap{max-width:1200px;margin:22px auto;padding:0 14px}
+    .hero{padding:8px 0 14px;text-align:center}
+    .hero h1{
+      margin:0; font-family:"Cinzel",serif; font-weight:800; font-size:40px;
+      background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 58%,var(--gold-3));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+    }
+
+    .grid{display:grid;gap:18px}
+    @media (min-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (min-width:1024px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+
+    .card{background:rgba(15,15,23,.92);backdrop-filter:saturate(120%) blur(2px);
+      border:1px solid var(--edge);border-radius:18px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+    .thumb{display:block;aspect-ratio:16/9;background:#12121a;background-size:cover;background-position:center}
+    .body{padding:12px 12px 16px}
+
+    .title{margin:8px 2px 10px;font-family:"Cinzel",serif;font-weight:700;font-size:18px;
+      background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 58%,var(--gold-3));
+      -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 1px 7px rgba(0,0,0,.35);
+    }
+
+    /* Slot pills – centered text, mobile vertical */
+    .slotstrip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    @media (max-width:520px){.slotstrip{grid-template-columns:1fr;}}
+    .pill{background:#0b0b12;border:1px solid #26263a;border-radius:999px;padding:10px 12px;min-height:48px;text-align:center}
+    .pill b{display:block;font-size:12px;line-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 auto}
+    .pill span{display:block;color:var(--muted);font-size:10px;line-height:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .bar{position:relative;height:6px;border-radius:999px;background:#1a1a24;margin-top:6px;overflow:hidden}
+    .bar i{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,#574b1b,#d0a84a);border-radius:999px}
+
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .actions .btn{flex:1;min-height:46px}
+    a{color:inherit}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero"><h1>Puzzles for Pebble</h1></header>
+
+    <section class="grid" id="cards"></section>
+  </div>
+
+  <script>
+    const PUZZLES = [
+      { key:'mushroom', title:'Mushroom', img:'./img/pebble.jpg',    href:'./mushroom.html' },
+      { key:'woods',    title:'Woods',    img:'./img/Woods.jpg',     href:'./woods.html' },
+      { key:'monamour', title:'Monamour', img:'./img/monamour.jpg',  href:'./monamour.html' },
+      { key:'home',     title:'Home',     img:'./img/home.jpg',      href:'./home.html' },
+    ];
+    const el = document.getElementById('cards');
+
+    function readSlotsFor(key){
+      try { return JSON.parse(localStorage.getItem('pebbleSlots::'+key)) || [null,null,null]; }
+      catch { return [null,null,null]; }
+    }
+    function percentComplete(s){
+      if(!s || !s.tiles) return 0;
+      const t = s.tiles, N = t.length; let ok=0;
+      for(let i=0;i<N;i++) if(t[i]===i) ok++;
+      return Math.round((ok/N)*100);
+    }
+    function mostRecent(slots){
+      let idx=-1, ts=0;
+      for(let i=0;i<3;i++){ if(slots[i] && slots[i].updatedAt>ts){ ts=slots[i].updatedAt; idx=i; } }
+      return idx;
+    }
+    function fmtAgo(ts){
+      if(!ts) return 'Empty';
+      const d = Math.max(1, Math.round((Date.now()-ts)/60000));
+      if(d<60) return d+'m ago';
+      const h=Math.round(d/60); if(h<24) return h+'h ago';
+      return Math.round(h/24)+'d ago';
+    }
+
+    PUZZLES.forEach(p => {
+      const slots = readSlotsFor(p.key);
+      const latest = mostRecent(slots);
+
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <a class="thumb" aria-label="${p.title} thumbnail" style="background-image:url('${p.img}')" href="${p.href}${latest>-1? '?autoload=1':''}"></a>
+        <div class="body">
+          <h3 class="title">${p.title}</h3>
+
+          <div class="slotstrip">
+            ${[0,1,2].map(i=>{
+              const s=slots[i];
+              const pct = percentComplete(s);
+              const name = s?.name || 'Empty';
+              const meta = s ? `${pct}% • ${s.moves||0} moves · ${fmtAgo(s.updatedAt)}` : '—';
+              return `
+                <div class="pill" title="${name}">
+                  <b>${name}</b>
+                  <span>${meta}</span>
+                  <div class="bar"><i style="width:${pct}%"></i></div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="actions">
+            <a class="btn primary" href="${p.href}${latest>-1? '?autoload=1':''}">${latest>-1?'Resume':'Play'}</a>
+            <a class="btn gold-outline" href="${p.href}?manage=1">Slots</a>
+          </div>
+        </div>
+      `;
+      // Whole card → Resume/Play
+      card.addEventListener('click', e=>{
+        const t=e.target;
+        if(t.closest('.btn') || t.classList.contains('thumb')) return;
+        location.href = p.href + (latest>-1? '?autoload=1':'' );
+      });
+      el.appendChild(card);
+    });
+  </script>
+</body>
+</html>
